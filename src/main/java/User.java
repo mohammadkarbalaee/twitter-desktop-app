@@ -11,11 +11,13 @@ public class User
     public void signUp(String name,String email,String password) throws IOException
     {
         boolean isNameSet = false;
+        boolean isPasswordSet = false;
         boolean isEmailSet = setEmail(email);
-        boolean isPasswordSet = setPassword(password);
+        if (isEmailSet)
+            isPasswordSet = setPassword(password);
         if (isEmailSet && isPasswordSet)
             isNameSet = setName(name);
-        if (isNameSet && isEmailSet && isPasswordSet)
+        if (isNameSet && isPasswordSet && isEmailSet)
             isNew = true;
         else
             isNew = false;
