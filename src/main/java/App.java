@@ -1,15 +1,13 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class App
 {
     public static void main(String[] args) throws IOException
     {
-        List<User> listOfUsers = new ArrayList<>();
         Scanner jin = new Scanner(System.in);
-        System.out.println("\t\tWelcome to CLI-based Twitter application\n");
+        System.out.println("\t\tCLI-based Twitter application\n");
         String input;
         do
         {
@@ -17,22 +15,19 @@ public class App
             //clearScreen();
             if (input.equalsIgnoreCase("Sign up"))
             {
-                System.out.println("\rPlease enter your full name");
+                System.out.println("\rEnter your full name");
                 String name = jin.nextLine();
-                System.out.println("Please enter a valid email of yours");
+                System.out.println("Enter a valid email of yours");
                 String email = jin.next();
                 System.out.println
                 (
-                        "Please enter a strong password\n" +
-                        "***\tyour password should include at least an uppercase letter,a digit and a special character to be certified as strong"
+                        "Enter a strong password\n" +
+                        "Strong passwords include at least:\n1: an uppercase letter\n2: a digit\n3: a special character\n4: are at least 10 characters long"
                 );
                 String password = jin.next();
-                User user = new User();
-                user.signUp(name,email,password);
-                if (user.getIsNew())
+                if (User.signUp(name,email,password))
                 {
-                    listOfUsers.add(user);
-                    user.showID();
+                    User.showID(name,email,password);
                     System.out.println("Successful sign up\nto access your account, use Login command;for more info use Help command.");
                 }
                 else
@@ -40,7 +35,15 @@ public class App
                     System.out.println("Failed to sign you up.use Sign up command again, not repeating the shown warnings");
                 }
             }
-            else if (input.equalsIgnoreCase("Login"));
+            else if (input.equalsIgnoreCase("Login"))
+            {
+                System.out.println("Enter your email");
+                String email = jin.next();
+                System.out.println("Enter your password");
+                String password = jin.next();
+                boolean successfulLogin = User.logIn(email,password);
+
+            }
             else if (input.equalsIgnoreCase("Help"))
             {
                 helpContent();
