@@ -87,13 +87,8 @@ public class Twitter extends User
         ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
         ArrayList<String> nameList = (ArrayList<String>) getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\name.txt");
         String name = "";
-        for (int i = 0; i < emailList.size(); i++)
-        {
-            if (emailList.get(i).equals(email))
-            {
-                name = nameList.get(i);
-            }
-        }
+        int i = emailList.indexOf(email);
+        name = nameList.get(i);
         String code = tweetCode();
         String likes = "0";
         setTweetKey(name,email,code,likes);
@@ -111,6 +106,26 @@ public class Twitter extends User
     {
         FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetValue.txt",true);
         writer.write("<tweet>\n" + text + "\n</tweet>");
+        writer.close();
+    }
+
+    private static void setFollower(ArrayList<String> dataList) throws IOException
+    {
+        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
+        for (String temp : dataList)
+        {
+            writer.write(temp + "\n");
+        }
+        writer.close();
+    }
+
+    private static void setFollowing(ArrayList<String> dataList) throws IOException
+    {
+        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
+        for (String temp : dataList)
+        {
+            writer.write(temp + "\n");
+        }
         writer.close();
     }
 
@@ -149,5 +164,116 @@ public class Twitter extends User
             tempPassword.setCharAt(randomI,specialCharacters[randomSpecialCharacter]);
         }
         return tempPassword.toString();
+    }
+
+    public static void follow(String followedEmail,String followerEmail) throws IOException
+    {
+        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
+        int destination = emailList.indexOf(followedEmail);
+        int provenance =  emailList.indexOf(followerEmail);
+        try
+        {
+            ArrayList<String> exceptionCheck = getFollowerData();
+            String tmp = exceptionCheck.get(0);
+        }
+        catch (IndexOutOfBoundsException E)
+        {
+            fileInitializer(emailList.size());
+        }
+        ArrayList<String> followerList = getFollowerData();
+        ArrayList<String> followingList = getFollowingData();
+        String followerLine;
+        String followingLine;
+        followerLine = followerList.get(destination);
+        followingLine = followingList.get(provenance);
+        followerLine = "/" + followerEmail + followerLine;
+        followingLine = "/" + followedEmail + followingLine;
+        followerList.set(destination,followerLine);
+        followingList.set(provenance,followingLine);
+        setFollower(followerList);
+        setFollowing(followingList);
+    }
+    public static void unfollow(String unfollowedEmail,String unfollowerEmail) throws IOException
+    {
+        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
+        int destination = emailList.indexOf(unfollowedEmail);
+        int provenance =  emailList.indexOf(unfollowerEmail);
+        ArrayList<String> followerList = getFollowerData();
+        ArrayList<String> followingList = getFollowingData();
+        String followerLine;
+        String followingLine;
+        followerLine = followerList.get(destination);
+        followingLine = followingList.get(provenance);
+        followerLine = followerLine.replace("/" + unfollowerEmail,"");
+        followingLine = followingLine.replace("/" + unfollowedEmail,"");
+        followerList.set(destination,followerLine);
+        followingList.set(provenance,followingLine);
+        setFollower(followerList);
+        setFollowing(followingList);
+    }
+
+    public static void follower(String email) throws FileNotFoundException
+    {
+        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
+        int i = emailList.indexOf(email);
+        ArrayList<String> followersList = getFollowerData();
+        String followerLine = followersList.get(i);
+        String[] parsedFollowerLine = followerLine.split("/");
+        for (String tmp : parsedFollowerLine)
+        {
+            System.out.println(tmp);
+        }
+    }
+
+    public static void following(String email) throws FileNotFoundException
+    {
+        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
+        int i = emailList.indexOf(email);
+        ArrayList<String> followingsList = getFollowingData();
+        String followingLine = followingsList.get(i);
+        String[] parsedFollowingLine = followingLine.split("/");
+        for (String tmp : parsedFollowingLine)
+        {
+            System.out.println(tmp);
+        }
+    }
+
+    private static void fileInitializer(int size) throws IOException
+    {
+        FileWriter writer1 = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
+        FileWriter writer2 = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
+        String str = "/\n";
+        while (size > 0)
+        {
+            writer1.write(str);
+            writer2.write(str);
+            size--;
+        }
+        writer1.close();
+        writer2.close();
+    }
+
+    private static ArrayList<String> getFollowerData() throws FileNotFoundException
+    {
+        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
+        Scanner reader = new Scanner(file);
+        ArrayList<String> dataList = new ArrayList<>();
+        while (reader.hasNextLine())
+        {
+            dataList.add(reader.nextLine());
+        }
+        return dataList;
+    }
+
+    private static ArrayList<String> getFollowingData() throws FileNotFoundException
+    {
+        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
+        Scanner reader = new Scanner(file);
+        ArrayList<String> dataList = new ArrayList<>();
+        while (reader.hasNextLine())
+        {
+            dataList.add(reader.nextLine());
+        }
+        return dataList;
     }
 }

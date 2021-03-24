@@ -61,6 +61,28 @@ public class App
                             Twitter.tweet(text,email);
                             System.out.println("tweet is saved successfully");
                         }
+                        else if (thisInput.equalsIgnoreCase("follow"))
+                        {
+                            System.out.println("Enter the email of the user you want to follow");
+                            String followedEmail = jin.next();
+                            Twitter.follow(followedEmail,email);
+                            System.out.println("followed successfully");
+                        }
+                        else if (thisInput.equalsIgnoreCase("unfollow"))
+                        {
+                            System.out.println("Enter the email of the user you want to unfollow");
+                            String unfollowedEmail = jin.next();
+                            Twitter.unfollow(unfollowedEmail,email);
+                            System.out.println("unfollowed successfully");
+                        }
+                        else if (thisInput.equalsIgnoreCase("following"))
+                        {
+                            Twitter.following(email);
+                        }
+                        else if (thisInput.equalsIgnoreCase("follower"))
+                        {
+                            Twitter.follower(email);
+                        }
                         else
                         {
                             if (!input.equalsIgnoreCase("logout"))
