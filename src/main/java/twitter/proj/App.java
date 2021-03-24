@@ -91,6 +91,18 @@ public class App
                         {
                             Twitter.timeLine(email);
                         }
+                        else if (thisInput.equalsIgnoreCase("Profile"))
+                        {
+                            System.out.println("Enter the email of the user whom you want his/her tweets");
+                            String targetEmail = jin.next();
+                            Twitter.profile(targetEmail);
+                        }
+                        else if (thisInput.equalsIgnoreCase("Like"))
+                        {
+                            System.out.println("Enter the code of the tweet that you want to like");
+                            String code = jin.next();
+                            Twitter.like(code);
+                        }
                         else
                         {
                             if (!input.equalsIgnoreCase("logout"))

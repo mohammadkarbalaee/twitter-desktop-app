@@ -1,10 +1,8 @@
 package twitter.proj;
 
 import org.apache.commons.lang3.StringUtils;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,13 +77,13 @@ public class Twitter extends User
         name = nameList.get(i);
         String code = tweetCode();
         String likes = "0";
-        setTweetKey(name,email,code,likes);
+        setTweetKey(name,email,code,likes,true);
         setTweetValue(text);
     }
 
-    private static void setTweetKey(String name,String email,String code,String likes) throws IOException
+    private static void setTweetKey(String name,String email,String code,String likes,boolean appendMode) throws IOException
     {
-        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt",true);
+        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt",appendMode);
         writer.write(name + "/" + email + "/" + code + "/" + likes + "\n");
         writer.close();
     }
@@ -269,5 +267,34 @@ public class Twitter extends User
             myProfile(tmp);
         }
         myProfile(email);
+    }
+
+    public static void profile(String email) throws FileNotFoundException
+    {
+        myProfile(email);
+    }
+
+    public static void like(String code) throws IOException
+    {
+        String[] tweets = getTweetData();
+        String[][] allDataParsed = idParser();
+        for (int i = 0; i < allDataParsed.length; i++)
+        {
+            if (allDataParsed[i][2].equals(code))
+            {
+                Integer likes = Integer.parseInt(allDataParsed[i][3]);
+                likes++;
+                String strLikes = (likes).toString();
+                allDataParsed[i][3] = strLikes;
+            }
+        }
+        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt");
+        PrintWriter writer = new PrintWriter(file);
+        writer.print("");
+        writer.close();
+        for (int i = 0; i < allDataParsed.length; i++)
+        {
+            setTweetKey(allDataParsed[i][0],allDataParsed[i][1],allDataParsed[i][2],allDataParsed[i][3],true);
+        }
     }
 }
