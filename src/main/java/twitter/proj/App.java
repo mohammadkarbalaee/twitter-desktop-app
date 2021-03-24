@@ -54,6 +54,13 @@ public class App
                         {
                             Twitter.myProfile(email);
                         }
+                        else if (thisInput.equalsIgnoreCase("tweet"))
+                        {
+                            System.out.println("Enter the text of your tweet");
+                            String text = jin.nextLine();
+                            Twitter.tweet(text,email);
+                            System.out.println("tweet is saved successfully");
+                        }
                         else
                         {
                             if (!input.equalsIgnoreCase("logout"))

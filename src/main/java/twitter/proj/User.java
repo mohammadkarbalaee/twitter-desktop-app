@@ -74,7 +74,7 @@ public class User
         setFileData("twitter/proj/password.txt",passwordSet);
     }
 
-    private static Collection<String> getFileData(String fileAddress) throws FileNotFoundException
+    protected static Collection<String> getFileData(String fileAddress) throws FileNotFoundException
     {
         File file = new File(fileAddress);
         Scanner reader = new Scanner(file);
