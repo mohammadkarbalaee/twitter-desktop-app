@@ -77,11 +77,19 @@ public class App
                         }
                         else if (thisInput.equalsIgnoreCase("following"))
                         {
-                            Twitter.following(email);
+                            String[] parsedFollowingLine = Twitter.following(email);
+                            for (String tmp : parsedFollowingLine)
+                            {
+                                System.out.println(tmp);
+                            }
                         }
                         else if (thisInput.equalsIgnoreCase("follower"))
                         {
                             Twitter.follower(email);
+                        }
+                        else if (thisInput.equalsIgnoreCase("Timeline"))
+                        {
+                            Twitter.timeLine(email);
                         }
                         else
                         {

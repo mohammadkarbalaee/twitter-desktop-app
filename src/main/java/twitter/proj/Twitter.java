@@ -36,18 +36,6 @@ public class Twitter extends User
         return keys;
     }
 
-    private static HashMap<String,String> idTweetMap() throws FileNotFoundException
-    {
-        HashMap<String,String> tweetMap = new HashMap<>();
-        ArrayList<String> keys = getIDData();
-        String[] values = getTweetData();
-        for (int i = 0; i < values.length; i++)
-        {
-            tweetMap.put(keys.get(i),values[i]);
-        }
-        return tweetMap;
-    }
-
     public static void myProfile(String email) throws FileNotFoundException
     {
         String[] tweets = getTweetData();
@@ -225,17 +213,13 @@ public class Twitter extends User
         }
     }
 
-    public static void following(String email) throws FileNotFoundException
+    public static String[] following(String email) throws FileNotFoundException
     {
         ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
         int i = emailList.indexOf(email);
         ArrayList<String> followingsList = getFollowingData();
         String followingLine = followingsList.get(i);
-        String[] parsedFollowingLine = followingLine.split("/");
-        for (String tmp : parsedFollowingLine)
-        {
-            System.out.println(tmp);
-        }
+        return followingLine.split("/");
     }
 
     private static void fileInitializer(int size) throws IOException
@@ -275,5 +259,15 @@ public class Twitter extends User
             dataList.add(reader.nextLine());
         }
         return dataList;
+    }
+
+    public static void timeLine(String email) throws FileNotFoundException
+    {
+        String[] parsedFollowingLine = following(email);
+        for (String tmp : parsedFollowingLine)
+        {
+            myProfile(tmp);
+        }
+        myProfile(email);
     }
 }

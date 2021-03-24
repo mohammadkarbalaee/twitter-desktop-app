@@ -1,6 +1,6 @@
-twitter/proj/User.java
- twitter.proj.User
 twitter/proj/Twitter.java
  twitter.proj.Twitter
 twitter/proj/App.java
  twitter.proj.App
+twitter/proj/User.java
+ twitter.proj.User
