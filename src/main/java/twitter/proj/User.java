@@ -1,3 +1,5 @@
+package twitter.proj;
+
 import java.io.*;
 import java.util.*;
 
@@ -7,7 +9,7 @@ public class User
     {
         if (!email.matches("[\\w.]+@[\\w.]+\\.[\\w]+"))
             return false;
-        Collection<String> emailSet = getFileData("email.txt");
+        Collection<String> emailSet = getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt");
         int sizeBefore = emailSet.size();
         emailSet.add(email);
         int sizeAfter = emailSet.size();
@@ -48,9 +50,9 @@ public class User
 
     private static void setName(String name) throws IOException
     {
-        Collection<String> namesSet = getFileData("name.txt");
+        Collection<String> namesSet = getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\name.txt");
         namesSet.add(name);
-        setFileData("name.txt",namesSet);
+        setFileData("twitter/proj/name.txt",namesSet);
     }
 
     public static void showID(String name,String email,String password)
@@ -60,16 +62,16 @@ public class User
 
     private static void setEmail(String email) throws IOException
     {
-        Collection<String> emailSet = getFileData("email.txt");
+        Collection<String> emailSet = getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt");
         emailSet.add(email);
-        setFileData("email.txt",emailSet);
+        setFileData("twitter/proj/email.txt",emailSet);
     }
 
     private static void setPassword(String password) throws IOException
     {
-        Collection<String> passwordSet = getFileData("password.txt");
+        Collection<String> passwordSet = getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\password.txt");
         passwordSet.add(password);
-        setFileData("password.txt",passwordSet);
+        setFileData("twitter/proj/password.txt",passwordSet);
     }
 
     private static Collection<String> getFileData(String fileAddress) throws FileNotFoundException
@@ -77,7 +79,7 @@ public class User
         File file = new File(fileAddress);
         Scanner reader = new Scanner(file);
         Collection<String> dataList;
-        if (fileAddress.equals("name.txt") || fileAddress.equals("password.txt"))
+        if (fileAddress.equals("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\name.txt") || fileAddress.equals("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\password.txt"))
             dataList = new ArrayList<>();
         else
             dataList = new LinkedHashSet<>();
@@ -101,9 +103,9 @@ public class User
 
     public static boolean logIn(String email,String password) throws FileNotFoundException
     {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("email.txt"));
-        ArrayList<String> nameList = (ArrayList<String>) getFileData("name.txt");
-        ArrayList<String> passwordList = (ArrayList<String>) getFileData("password.txt");
+        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
+        ArrayList<String> nameList = (ArrayList<String>) getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\name.txt");
+        ArrayList<String> passwordList = (ArrayList<String>) getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\password.txt");
         for (int i = 0; i < emailList.size(); i++)
         {
             if (emailList.get(i).equals(email))

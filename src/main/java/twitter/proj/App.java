@@ -1,5 +1,6 @@
+package twitter.proj;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App
@@ -12,7 +13,7 @@ public class App
         do
         {
             input = jin.nextLine();
-            //clearScreen();
+            clearScreen();
             if (input.equalsIgnoreCase("Sign up"))
             {
                 System.out.println("\rEnter your full name");
@@ -42,6 +43,25 @@ public class App
                 System.out.println("Enter your password");
                 String password = jin.next();
                 boolean successfulLogin = User.logIn(email,password);
+                if (successfulLogin)
+                {
+                    String thisInput;
+                    do
+                    {
+                        thisInput = jin.nextLine();
+                        clearScreen();
+                        if (thisInput.equalsIgnoreCase("My profile"))
+                        {
+                            Twitter.myProfile(email);
+                        }
+                        else
+                        {
+                            if (!input.equalsIgnoreCase("logout"))
+                                wrongCommandError(input);
+                        }
+                    }
+                    while (!thisInput.equalsIgnoreCase("Logout"));
+                }
 
             }
             else if (input.equalsIgnoreCase("Help"))
