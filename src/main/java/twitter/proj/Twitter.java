@@ -1,121 +1,105 @@
-package twitter.proj;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.*;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.util.*;
 
-public class Twitter extends User
+public class Twitter
 {
-    private static String[] getTweetData() throws FileNotFoundException
-    {
-        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetValue.txt");
-        Scanner reader = new Scanner(file);
-        StringBuilder allTweets = new StringBuilder("");
-        while (reader.hasNextLine())
-        {
-            allTweets.append(reader.nextLine());
-        }
-        return StringUtils.substringsBetween(allTweets.toString(),"<tweet>","</tweet>");
-    }
+    private ArrayList<User> signedUps = new ArrayList<>();
+    private User loggedInUser;
 
-    private static ArrayList<String> getIDData() throws FileNotFoundException
+    public boolean signUp(User user)
     {
-        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt");
-        Scanner reader = new Scanner(file);
-        ArrayList<String> keys = new ArrayList<>();
-        while (reader.hasNextLine())
+        boolean isValid = false;
+        boolean isUnique = false;
+        if (user.getEmail().matches("[\\w.]+@[\\w.]+\\.[\\w]+"))
         {
-            keys.add(reader.nextLine());
+            isValid = true;
         }
-        return keys;
-    }
-
-    public static void myProfile(String email) throws FileNotFoundException
-    {
-        String[] tweets = getTweetData();
-        String[][] allDataParsed = idParser();
-        for (int i = 0; i < allDataParsed.length; i++)
+        if (isValid)
         {
-            if (allDataParsed[i][1].equals(email))
+            if (signedUps.isEmpty())
             {
-                System.out.printf
-                (
-                                "------------------%n" +
-                                "Tweet %d%n" +
-                                "Owner's name: %s%n" +
-                                "Owner's email: %s%n" +
-                                "Tweet's code: %s%n" +
-                                "Likes: %s%n" +
-                                "Tweet's text: %n%s%n",
-                        i+1,allDataParsed[i][0],allDataParsed[i][1],allDataParsed[i][2],allDataParsed[i][3],tweets[i]
-                );
+                signedUps.add(user);
+                isUnique = true;
+            }
+            else
+            {
+                boolean isNameUnique = true;
+                for (User tmp : signedUps)
+                {
+                    if (tmp.getName().equals(user.getName()))
+                    {
+                        isNameUnique = false;
+                        break;
+                    }
+                }
+                boolean isEmailUnique = true;
+                if (isNameUnique)
+                {
+                    for (User tmp : signedUps)
+                    {
+                        if (tmp.getEmail().equals(user.getEmail()))
+                        {
+                            isEmailUnique = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isNameUnique && isEmailUnique)
+                {
+                    signedUps.add(user);
+                    isUnique = true;
+                }
             }
         }
+        return (isUnique && isValid);
     }
 
-    private static String[][] idParser() throws FileNotFoundException
+    public boolean login(String email,String password)
     {
-        ArrayList<String> keys = getIDData();
-        String[][] parsedIds = new String[keys.size()][4];
-        for (int i = 0; i < keys.size(); i++)
+        boolean isLoggedIn = false;
+        for (int i = 0; i < signedUps.size(); i++)
         {
-            parsedIds[i] = keys.get(i).split("/");
+            if (signedUps.get(i).getEmail().equals(email))
+            {
+                if (signedUps.get(i).getPassword().equals(password))
+                {
+                    isLoggedIn = true;
+                    loggedInUser = new User(signedUps.get(i).getName(),signedUps.get(i).getEmail(),signedUps.get(i).getPassword());
+                    break;
+                }
+            }
         }
-        return parsedIds;
+        return isLoggedIn;
     }
 
-    public static void tweet(String text,String email) throws IOException
+    public void tweet(String mainText)
     {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
-        ArrayList<String> nameList = (ArrayList<String>) getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\name.txt");
-        String name = "";
-        int i = emailList.indexOf(email);
-        name = nameList.get(i);
-        String code = tweetCode();
-        String likes = "0";
-        setTweetKey(name,email,code,likes,true);
-        setTweetValue(text);
+        Tweet newTweet = new Tweet(loggedInUser,genCode(),mainText, LocalDateTime.now());
+        loggedInUser.setTweet(newTweet);
     }
 
-    private static void setTweetKey(String name,String email,String code,String likes,boolean appendMode) throws IOException
+    public boolean like(String code)
     {
-        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt",appendMode);
-        writer.write(name + "/" + email + "/" + code + "/" + likes + "\n");
-        writer.close();
-    }
-
-    private static void setTweetValue(String text) throws IOException
-    {
-        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetValue.txt",true);
-        writer.write("<tweet>\n" + text + "\n</tweet>");
-        writer.close();
-    }
-
-    private static void setFollower(ArrayList<String> dataList) throws IOException
-    {
-        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
-        for (String temp : dataList)
+        boolean isTweetAvailable = false;
+        for (int i = 0; i < signedUps.size(); i++)
         {
-            writer.write(temp + "\n");
+            for (int j = 0; j < signedUps.get(i).getTweets().size(); j++)
+            {
+                System.out.println("i am in second loop");
+                if (signedUps.get(i).getTweets().get(j).getCode().equals(code))
+                {
+                    isTweetAvailable = true;
+                    signedUps.get(i).getTweets().get(j).addLike();
+                }
+            }
         }
-        writer.close();
+        System.out.println(isTweetAvailable);
+        return isTweetAvailable;
     }
 
-    private static void setFollowing(ArrayList<String> dataList) throws IOException
-    {
-        FileWriter writer = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
-        for (String temp : dataList)
-        {
-            writer.write(temp + "\n");
-        }
-        writer.close();
-    }
-
-    private static String baseCode()
+    private String baseCode()
     {
         SecureRandom rand = new SecureRandom();
         StringBuilder tempPassword = new StringBuilder();
@@ -129,7 +113,7 @@ public class Twitter extends User
         return tempPassword.toString();
     }
 
-    private static String tweetCode()
+    private String genCode()
     {
         SecureRandom rand = new SecureRandom();
         StringBuilder tempPassword = new StringBuilder(baseCode());
@@ -152,149 +136,124 @@ public class Twitter extends User
         return tempPassword.toString();
     }
 
-    public static void follow(String followedEmail,String followerEmail) throws IOException
+    public void myProfile()
     {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
-        int destination = emailList.indexOf(followedEmail);
-        int provenance =  emailList.indexOf(followerEmail);
-        try
+        for (Tweet tmp : loggedInUser.getTweets())
         {
-            ArrayList<String> exceptionCheck = getFollowerData();
-            String tmp = exceptionCheck.get(0);
+            System.out.printf("---------------------\nTweet's code: %s\n" +
+                    "likes: %d\n" +
+                    "main text: %s\n",
+                    tmp.getCode(),
+                    tmp.getLikes(),
+                    tmp.getMainText());
         }
-        catch (IndexOutOfBoundsException E)
+        System.out.println("---------------------");
+    }
+
+    public boolean profile(String name)
+    {
+        boolean isUserAvailable = false;
+        for (int i = 0; i < signedUps.size(); i++)
         {
-            fileInitializer(emailList.size());
-        }
-        ArrayList<String> followerList = getFollowerData();
-        ArrayList<String> followingList = getFollowingData();
-        String followerLine;
-        String followingLine;
-        followerLine = followerList.get(destination);
-        followingLine = followingList.get(provenance);
-        followerLine = "/" + followerEmail + followerLine;
-        followingLine = "/" + followedEmail + followingLine;
-        followerList.set(destination,followerLine);
-        followingList.set(provenance,followingLine);
-        setFollower(followerList);
-        setFollowing(followingList);
-    }
-    public static void unfollow(String unfollowedEmail,String unfollowerEmail) throws IOException
-    {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
-        int destination = emailList.indexOf(unfollowedEmail);
-        int provenance =  emailList.indexOf(unfollowerEmail);
-        ArrayList<String> followerList = getFollowerData();
-        ArrayList<String> followingList = getFollowingData();
-        String followerLine;
-        String followingLine;
-        followerLine = followerList.get(destination);
-        followingLine = followingList.get(provenance);
-        followerLine = followerLine.replace("/" + unfollowerEmail,"");
-        followingLine = followingLine.replace("/" + unfollowedEmail,"");
-        followerList.set(destination,followerLine);
-        followingList.set(provenance,followingLine);
-        setFollower(followerList);
-        setFollowing(followingList);
-    }
-
-    public static void follower(String email) throws FileNotFoundException
-    {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
-        int i = emailList.indexOf(email);
-        ArrayList<String> followersList = getFollowerData();
-        String followerLine = followersList.get(i);
-        String[] parsedFollowerLine = followerLine.split("/");
-        for (String tmp : parsedFollowerLine)
-        {
-            System.out.println(tmp);
-        }
-    }
-
-    public static String[] following(String email) throws FileNotFoundException
-    {
-        ArrayList<String> emailList = new ArrayList<>(getFileData("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\email.txt"));
-        int i = emailList.indexOf(email);
-        ArrayList<String> followingsList = getFollowingData();
-        String followingLine = followingsList.get(i);
-        return followingLine.split("/");
-    }
-
-    private static void fileInitializer(int size) throws IOException
-    {
-        FileWriter writer1 = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
-        FileWriter writer2 = new FileWriter("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
-        String str = "/\n";
-        while (size > 0)
-        {
-            writer1.write(str);
-            writer2.write(str);
-            size--;
-        }
-        writer1.close();
-        writer2.close();
-    }
-
-    private static ArrayList<String> getFollowerData() throws FileNotFoundException
-    {
-        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\follower.txt");
-        Scanner reader = new Scanner(file);
-        ArrayList<String> dataList = new ArrayList<>();
-        while (reader.hasNextLine())
-        {
-            dataList.add(reader.nextLine());
-        }
-        return dataList;
-    }
-
-    private static ArrayList<String> getFollowingData() throws FileNotFoundException
-    {
-        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\following.txt");
-        Scanner reader = new Scanner(file);
-        ArrayList<String> dataList = new ArrayList<>();
-        while (reader.hasNextLine())
-        {
-            dataList.add(reader.nextLine());
-        }
-        return dataList;
-    }
-
-    public static void timeLine(String email) throws FileNotFoundException
-    {
-        String[] parsedFollowingLine = following(email);
-        for (String tmp : parsedFollowingLine)
-        {
-            myProfile(tmp);
-        }
-        myProfile(email);
-    }
-
-    public static void profile(String email) throws FileNotFoundException
-    {
-        myProfile(email);
-    }
-
-    public static void like(String code) throws IOException
-    {
-        String[] tweets = getTweetData();
-        String[][] allDataParsed = idParser();
-        for (int i = 0; i < allDataParsed.length; i++)
-        {
-            if (allDataParsed[i][2].equals(code))
+            if (signedUps.get(i).getName().equals(name))
             {
-                Integer likes = Integer.parseInt(allDataParsed[i][3]);
-                likes++;
-                String strLikes = (likes).toString();
-                allDataParsed[i][3] = strLikes;
+                isUserAvailable = true;
+                for (Tweet tmp : signedUps.get(i).getTweets())
+                {
+                    System.out.printf("---------------------\nTweet's code: %s\n" +
+                            "likes: %d\n" +
+                            "main text: %s\n",
+                            tmp.getCode(),
+                            tmp.getLikes(),
+                            tmp.getMainText());
+                }
+                System.out.println("---------------------");
             }
         }
-        File file = new File("C:\\Users\\muham\\Desktop\\twitter\\src\\main\\java\\twitter\\proj\\tweetKey.txt");
-        PrintWriter writer = new PrintWriter(file);
-        writer.print("");
-        writer.close();
-        for (int i = 0; i < allDataParsed.length; i++)
+        return isUserAvailable;
+    }
+
+    public boolean follow(String name)
+    {
+        boolean isUserAvailable = false;
+        for (int i = 0; i < signedUps.size(); i++)
         {
-            setTweetKey(allDataParsed[i][0],allDataParsed[i][1],allDataParsed[i][2],allDataParsed[i][3],true);
+            if (signedUps.get(i).getName().equals(name))
+            {
+                isUserAvailable = true;
+                signedUps.get(i).setFollowers(loggedInUser);
+                loggedInUser.setFollowings(signedUps.get(i));
+            }
+        }
+        return isUserAvailable;
+    }
+
+    public boolean unfollow(String name)
+    {
+        boolean isUserAvailable = false;
+        boolean isUnfollowed = false;
+        for (int i = 0; i < signedUps.size(); i++)
+        {
+            if (signedUps.get(i).getName().equals(name))
+            {
+                isUserAvailable = true;
+                loggedInUser.setUnfollowing(signedUps.get(i));
+                isUnfollowed = signedUps.get(i).setUnfollower(loggedInUser);
+            }
+        }
+        return isUserAvailable && isUnfollowed;
+    }
+
+    public void followers()
+    {
+        for (User tmp : loggedInUser.getFollowers())
+        {
+            System.out.println(tmp.getName());
+        }
+    }
+
+    public void following()
+    {
+        for (User tmp : loggedInUser.getFollowings())
+        {
+            System.out.println(tmp.getName());
+        }
+    }
+
+    public void timeline()
+    {
+        ArrayList<LocalDateTime> tweetsTime = new ArrayList<>();
+        ArrayList<Tweet> allRelatedTweets = new ArrayList<>();
+        loggedInUser.getTweets().addAll(allRelatedTweets);
+        for (Tweet tmp : loggedInUser.getTweets())
+        {
+            tweetsTime.add(tmp.getTime());
+        }
+        for (User tmp : loggedInUser.getFollowers())
+        {
+            tmp.getTweets().addAll(allRelatedTweets);
+            for (Tweet temp : tmp.getTweets())
+            {
+                tweetsTime.add(temp.getTime());
+            }
+        }
+        Collections.sort(tweetsTime);
+        for (LocalDateTime tmp : tweetsTime)
+        {
+            for (Tweet temp : allRelatedTweets)
+            {
+                if (tmp.compareTo(temp.getTime()) == 0)
+                {
+                    System.out.printf("---------------------\nTweet's owner: %s" +
+                            "Tweet's code: %s\n" +
+                            "likes: %d\n" +
+                            "main text: %s\n",
+                            temp.getOwner().getName(),
+                            temp.getCode(),
+                            temp.getLikes(),
+                            temp.getMainText());
+                }
+            }
         }
     }
 }
