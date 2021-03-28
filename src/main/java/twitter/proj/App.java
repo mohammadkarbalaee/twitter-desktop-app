@@ -1,18 +1,20 @@
+package twitter.proj;
+
 import java.io.IOException;
 import java.util.Scanner;
 
 public class App
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
         Twitter twitter = new Twitter();
         Scanner jin = new Scanner(System.in);
         String command;
+        clearScreen();
         System.out.println("\t\tCLI-based Twitter application\n");
         do
         {
             command = jin.nextLine();
-            clearScreen();
             if ("Sign up".equalsIgnoreCase(command))
             {
                 System.out.println("Enter your name");
@@ -25,9 +27,13 @@ public class App
                 if (twitter.signUp(newUser))
                 {
                     System.out.println("Signed up");
+                    Thread.sleep(2000);
+                    clearScreen();
                 } else
                 {
                     System.err.println("Failed to sign up");
+                    Thread.sleep(2000);
+                    clearScreen();
                 }
             }
             else if ("Login".equalsIgnoreCase(command))
@@ -39,9 +45,10 @@ public class App
                 if (twitter.login(email, password))
                 {
                     System.out.println("Logged in");
+                    Thread.sleep(2000);
+                    clearScreen();
                     do
                     {
-                        clearScreen();
                         command = jin.nextLine();
                         if ("My profile".equalsIgnoreCase(command))
                         {
@@ -53,6 +60,8 @@ public class App
                             String mainText = jin.nextLine();
                             twitter.tweet(mainText);
                             System.out.println("Tweeted successfully");
+                            Thread.sleep(2000);
+                            clearScreen();
                         }
                         else if ("Follow".equalsIgnoreCase(command))
                         {
@@ -61,10 +70,14 @@ public class App
                             if (twitter.follow(name))
                             {
                                 System.out.println("Followed successfully");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                             else
                             {
                                 System.err.println("No such user in directory");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                         }
                         else if ("Unfollow".equalsIgnoreCase(command))
@@ -74,10 +87,14 @@ public class App
                             if (twitter.unfollow(name))
                             {
                                 System.out.println("Unfollowed successfully");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                             else
                             {
                                 System.err.println("No such user in directory or in your followed users list");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                         }
                         else if ("Followers".equalsIgnoreCase(command))
@@ -101,6 +118,8 @@ public class App
                             else
                             {
                                 System.err.println("No such user in directory");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                         }
                         else if ("Like".equalsIgnoreCase(command))
@@ -110,10 +129,14 @@ public class App
                             if (twitter.like(code))
                             {
                                 System.out.println("Liked the tweet");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                             else
                             {
                                 System.err.println("No tweet available with that code");
+                                Thread.sleep(2000);
+                                clearScreen();
                             }
                         }
                     }
@@ -122,6 +145,8 @@ public class App
                 else
                 {
                     System.err.println("Failed to log in");
+                    Thread.sleep(2000);
+                    clearScreen();
                 }
             }
             else if ("Help".equalsIgnoreCase(command))
@@ -132,14 +157,14 @@ public class App
         while (!command.equalsIgnoreCase("Quit"));
     }
 
-    public static void help()
+    public static void help() throws InterruptedException
     {
         System.out.printf
                 (
                         "%-15s||\tto terminate the program\n" +
                                 "%-15s||\tto make a new account\n" +
-                                "%-15s||\tto register in your Twitter account\n" +
-                                "%-15s||\tto unregister from your Twitter account\n" +
+                                "%-15s||\tto register in your twitter.proj.Twitter account\n" +
+                                "%-15s||\tto unregister from your twitter.proj.Twitter account\n" +
                                 "%-15s||\tto get the data of the person who has logged in now\n" +
                                 "%-15s||\tto make a tweet\n" +
                                 "%-15s||\tto follow a user\n" +
@@ -163,13 +188,14 @@ public class App
                         "Timeline",
                         "Profile",
                         "Like",
-                        "***\t These commands aren't case-sensitive\n" +
-                                "***\t names and emails has to be unique,otherwise, signing up will fail\t\n" +
+                        "***These commands aren't case-sensitive\n" +
+                                "***names and emails has to be unique,otherwise, signing up will fail\t\n" +
                                 "***any command other than the ones listed above will be ignored automatically\n" +
                                 "***a valid password contains at least one digit and one special character and one uppercase letter\n" +
                                 "***before logging in only \"Quit\" and \"Sign up\" and \"Help\" are available\n" +
                                 "***while typing a tweet,pressing \"Enter\" means you're done with typing\n"
                 );
+        Thread.sleep(2000);
     }
 
     public static void clearScreen()

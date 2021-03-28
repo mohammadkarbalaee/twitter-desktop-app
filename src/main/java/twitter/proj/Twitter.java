@@ -1,3 +1,5 @@
+package twitter.proj;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -77,7 +79,13 @@ public class Twitter
     public void tweet(String mainText)
     {
         Tweet newTweet = new Tweet(loggedInUser,genCode(),mainText, LocalDateTime.now());
-        loggedInUser.setTweet(newTweet);
+        for (int j = 0; j < signedUps.size(); j++)
+        {
+            if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+            {
+                signedUps.get(j).setTweet(newTweet);
+            }
+        }
     }
 
     public boolean like(String code)
@@ -87,7 +95,6 @@ public class Twitter
         {
             for (int j = 0; j < signedUps.get(i).getTweets().size(); j++)
             {
-                System.out.println("i am in second loop");
                 if (signedUps.get(i).getTweets().get(j).getCode().equals(code))
                 {
                     isTweetAvailable = true;
@@ -95,7 +102,6 @@ public class Twitter
                 }
             }
         }
-        System.out.println(isTweetAvailable);
         return isTweetAvailable;
     }
 
@@ -138,19 +144,25 @@ public class Twitter
 
     public void myProfile()
     {
-        for (Tweet tmp : loggedInUser.getTweets())
+        for (int j = 0; j < signedUps.size(); j++)
         {
-            System.out.printf("---------------------\nTweet's code: %s\n" +
-                    "likes: %d\n" +
-                    "main text: %s\n",
-                    tmp.getCode(),
-                    tmp.getLikes(),
-                    tmp.getMainText());
+            if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+            {
+                for (Tweet tmp : signedUps.get(j).getTweets())
+                {
+                    System.out.printf("---------------------\nTweet's code: %s\n" +
+                                    "likes: %d\n" +
+                                    "main text: %s\n",
+                            tmp.getCode(),
+                            tmp.getLikes(),
+                            tmp.getMainText());
+                }
+                System.out.println("---------------------");
+            }
         }
-        System.out.println("---------------------");
     }
 
-    public boolean profile(String name)
+    public boolean profile(String name) throws InterruptedException
     {
         boolean isUserAvailable = false;
         for (int i = 0; i < signedUps.size(); i++)
@@ -161,8 +173,8 @@ public class Twitter
                 for (Tweet tmp : signedUps.get(i).getTweets())
                 {
                     System.out.printf("---------------------\nTweet's code: %s\n" +
-                            "likes: %d\n" +
-                            "main text: %s\n",
+                                    "likes: %d\n" +
+                                    "main text: %s\n",
                             tmp.getCode(),
                             tmp.getLikes(),
                             tmp.getMainText());
@@ -170,6 +182,7 @@ public class Twitter
                 System.out.println("---------------------");
             }
         }
+        Thread.sleep(10000);
         return isUserAvailable;
     }
 
@@ -181,8 +194,14 @@ public class Twitter
             if (signedUps.get(i).getName().equals(name))
             {
                 isUserAvailable = true;
-                signedUps.get(i).setFollowers(loggedInUser);
-                loggedInUser.setFollowings(signedUps.get(i));
+                for (int j = 0; j < signedUps.size(); j++)
+                {
+                    if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+                    {
+                        signedUps.get(i).setFollowers(signedUps.get(j));
+                        signedUps.get(j).setFollowings(signedUps.get(i));
+                    }
+                }
             }
         }
         return isUserAvailable;
@@ -197,8 +216,14 @@ public class Twitter
             if (signedUps.get(i).getName().equals(name))
             {
                 isUserAvailable = true;
-                loggedInUser.setUnfollowing(signedUps.get(i));
-                isUnfollowed = signedUps.get(i).setUnfollower(loggedInUser);
+                for (int j = 0; j < signedUps.size(); j++)
+                {
+                    if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+                    {
+                        signedUps.get(j).setUnfollowing(signedUps.get(i));
+                        isUnfollowed = signedUps.get(i).setUnfollower(signedUps.get(j));
+                    }
+                }
             }
         }
         return isUserAvailable && isUnfollowed;
@@ -206,17 +231,30 @@ public class Twitter
 
     public void followers()
     {
-        for (User tmp : loggedInUser.getFollowers())
+        for (int j = 0; j < signedUps.size(); j++)
         {
-            System.out.println(tmp.getName());
+            if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+            {
+                for (User tmp : signedUps.get(j).getFollowers())
+                {
+                    System.out.println(tmp.getName());
+                }
+            }
         }
+
     }
 
     public void following()
     {
-        for (User tmp : loggedInUser.getFollowings())
+        for (int j = 0; j < signedUps.size(); j++)
         {
-            System.out.println(tmp.getName());
+            if(signedUps.get(j).getName().equals(loggedInUser.getName()))
+            {
+                for (User tmp : signedUps.get(j).getFollowings())
+                {
+                    System.out.println(tmp.getName());
+                }
+            }
         }
     }
 
@@ -224,34 +262,41 @@ public class Twitter
     {
         ArrayList<LocalDateTime> tweetsTime = new ArrayList<>();
         ArrayList<Tweet> allRelatedTweets = new ArrayList<>();
-        loggedInUser.getTweets().addAll(allRelatedTweets);
-        for (Tweet tmp : loggedInUser.getTweets())
+        for (int j = 0; j < signedUps.size(); j++)
         {
-            tweetsTime.add(tmp.getTime());
-        }
-        for (User tmp : loggedInUser.getFollowers())
-        {
-            tmp.getTweets().addAll(allRelatedTweets);
-            for (Tweet temp : tmp.getTweets())
+            if(signedUps.get(j).getName().equals(loggedInUser.getName()))
             {
-                tweetsTime.add(temp.getTime());
-            }
-        }
-        Collections.sort(tweetsTime);
-        for (LocalDateTime tmp : tweetsTime)
-        {
-            for (Tweet temp : allRelatedTweets)
-            {
-                if (tmp.compareTo(temp.getTime()) == 0)
+                allRelatedTweets.addAll(signedUps.get(j).getTweets());
+                for (Tweet tmp : signedUps.get(j).getTweets())
                 {
-                    System.out.printf("---------------------\nTweet's owner: %s" +
-                            "Tweet's code: %s\n" +
-                            "likes: %d\n" +
-                            "main text: %s\n",
-                            temp.getOwner().getName(),
-                            temp.getCode(),
-                            temp.getLikes(),
-                            temp.getMainText());
+                    tweetsTime.add(tmp.getTime());
+                }
+                for (User tmp : signedUps.get(j).getFollowers())
+                {
+                    allRelatedTweets.addAll(tmp.getTweets());
+                    for (Tweet temp : tmp.getTweets())
+                    {
+                        tweetsTime.add(temp.getTime());
+                    }
+                }
+                Collections.sort(tweetsTime);
+                for (LocalDateTime tmp : tweetsTime)
+                {
+                    for (Tweet temp : allRelatedTweets)
+                    {
+                        if (tmp.compareTo(temp.getTime()) == 0)
+                        {
+                            System.out.printf("---------------------\nTweet's owner: %s\n" +
+                                            "Tweet's code: %s\n" +
+                                            "likes: %d\n" +
+                                            "main text: %s\n",
+                                    temp.getOwner().getName(),
+                                    temp.getCode(),
+                                    temp.getLikes(),
+                                    temp.getMainText());
+                            System.out.println("---------------------");
+                        }
+                    }
                 }
             }
         }

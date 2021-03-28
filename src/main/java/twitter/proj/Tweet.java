@@ -1,5 +1,6 @@
+package twitter.proj;
+
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class Tweet
 {
@@ -9,7 +10,7 @@ public class Tweet
     private LocalDateTime time;
     private User owner;
 
-    public Tweet(User owner,String code,String mainText,LocalDateTime time)
+    public Tweet(User owner, String code, String mainText, LocalDateTime time)
     {
         this.code = code;
         this.mainText = mainText;
