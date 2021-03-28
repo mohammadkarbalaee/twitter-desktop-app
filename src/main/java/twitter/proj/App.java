@@ -1,15 +1,31 @@
 package twitter.proj;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class App
 {
-    public static void main(String[] args) throws InterruptedException
+    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException
     {
-        Twitter twitter = new Twitter();
+        Twitter twitter;
         Scanner jin = new Scanner(System.in);
         String command;
+        String fileAddress = System.getProperty("user.dir") + "\\log.bin";
+        File file = new File(fileAddress);
+        FileInputStream fileInputStream;
+        ObjectInputStream objectInputStream;
+        if (file.createNewFile())
+        {
+            twitter = new Twitter();
+        }
+        else
+        {
+            fileInputStream = new FileInputStream(file);
+            objectInputStream = new ObjectInputStream(fileInputStream);
+            twitter = (Twitter) objectInputStream.readObject();
+            objectInputStream.close();
+            fileInputStream.close();
+        }
         clearScreen();
         System.out.println("\t\tCLI-based Twitter application\n");
         do
@@ -155,6 +171,12 @@ public class App
             }
         }
         while (!command.equalsIgnoreCase("Quit"));
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(twitter);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        fileOutputStream.close();
     }
 
     public static void help() throws InterruptedException

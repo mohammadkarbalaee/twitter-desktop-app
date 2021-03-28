@@ -1,8 +1,9 @@
 package twitter.proj;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class User
+public class User implements Serializable
 {
     private ArrayList<User> followers = new ArrayList<>();
     private ArrayList<User> followings = new ArrayList<>();

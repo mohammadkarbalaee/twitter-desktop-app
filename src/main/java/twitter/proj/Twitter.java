@@ -1,10 +1,11 @@
 package twitter.proj;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class Twitter
+public class Twitter implements Serializable
 {
     private ArrayList<User> signedUps = new ArrayList<>();
     private User loggedInUser;
