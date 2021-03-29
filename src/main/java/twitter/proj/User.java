@@ -1,16 +1,14 @@
-package twitter.proj;
 
 import java.util.ArrayList;
-import java.io.Serializable;
 
-public class User implements Serializable
+public class User
 {
-    private ArrayList<User> followers = new ArrayList<>();
-    private ArrayList<User> followings = new ArrayList<>();
-    private String name;
-    private String email;
-    private String password;
-    private ArrayList<Tweet> tweets = new ArrayList<>();
+    public ArrayList<User> followers = new ArrayList<>();
+    public ArrayList<User> followings = new ArrayList<>();
+    public String name;
+    public String email;
+    public String password;
+    public ArrayList<Tweet> tweets = new ArrayList<>();
 
     public User(String name, String email, String password)
     {
@@ -18,7 +16,10 @@ public class User implements Serializable
         this.email = email;
         this.password = password;
     }
+    public User()
+    {
 
+    }
     public ArrayList<User> getFollowers()
     {
         return followers;

@@ -1,31 +1,33 @@
-package twitter.proj;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 
 import java.io.*;
+import java.sql.*;
 import java.util.Scanner;
 
 public class App
 {
-    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException
+
+    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException, SQLException
     {
-        Twitter twitter;
+        Class.forName("com.mysql.jdbc.Driver");
+        String query = "SELECT Json FROM app";
+        String url = "jdbc:mysql://localhost:3306/twitter?user=root";
+        Connection connection = DriverManager.getConnection(url);
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery(query);
+        String json = "";
+        while (rs.next())
+        {
+            json = rs.getString("Json");
+        }
+        Gson gson = new Gson();
+        Twitter twitter = gson.fromJson(json, Twitter.class);
+        rs.close();
         Scanner jin = new Scanner(System.in);
         String command;
-        String fileAddress = System.getProperty("user.dir") + "\\log.bin";
-        File file = new File(fileAddress);
-        FileInputStream fileInputStream;
-        ObjectInputStream objectInputStream;
-        if (file.createNewFile())
-        {
-            twitter = new Twitter();
-        }
-        else
-        {
-            fileInputStream = new FileInputStream(file);
-            objectInputStream = new ObjectInputStream(fileInputStream);
-            twitter = (Twitter) objectInputStream.readObject();
-            objectInputStream.close();
-            fileInputStream.close();
-        }
         clearScreen();
         System.out.println("\t\tCLI-based Twitter application\n");
         do
@@ -171,12 +173,16 @@ public class App
             }
         }
         while (!command.equalsIgnoreCase("Quit"));
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-        objectOutputStream.writeObject(twitter);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        fileOutputStream.close();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT,true);
+        objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,true);
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT,true);
+        objectMapper.registerModule(new JavaTimeModule());
+        String jsonInString = objectMapper.writeValueAsString(twitter);
+        String deleteQuery = "DELETE FROM app Where Json = '" + json + "';";
+        st.executeUpdate(deleteQuery);
+        String addQuery = "INSERT INTO app(Json) VALUES('" + jsonInString + "')";
+        st.executeUpdate(addQuery);
     }
 
     public static void help() throws InterruptedException
@@ -228,4 +234,5 @@ public class App
         }
         catch (IOException | InterruptedException ex){}
     }
+
 }

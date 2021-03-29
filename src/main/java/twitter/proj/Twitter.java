@@ -1,14 +1,16 @@
-package twitter.proj;
 
-import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class Twitter implements Serializable
+public class Twitter
 {
-    private ArrayList<User> signedUps = new ArrayList<>();
-    private User loggedInUser;
+    public ArrayList<User> signedUps = new ArrayList<>();
+    public User loggedInUser;
+
+    public Twitter()
+    {
+    }
 
     public boolean signUp(User user)
     {
@@ -79,7 +81,7 @@ public class Twitter implements Serializable
 
     public void tweet(String mainText)
     {
-        Tweet newTweet = new Tweet(loggedInUser,genCode(),mainText, LocalDateTime.now());
+        Tweet newTweet = new Tweet(loggedInUser,genCode(),mainText,LocalDateTime.now());
         for (int j = 0; j < signedUps.size(); j++)
         {
             if(signedUps.get(j).getName().equals(loggedInUser.getName()))
@@ -106,7 +108,7 @@ public class Twitter implements Serializable
         return isTweetAvailable;
     }
 
-    private String baseCode()
+    public String baseCode()
     {
         SecureRandom rand = new SecureRandom();
         StringBuilder tempPassword = new StringBuilder();
@@ -120,7 +122,7 @@ public class Twitter implements Serializable
         return tempPassword.toString();
     }
 
-    private String genCode()
+    public String genCode()
     {
         SecureRandom rand = new SecureRandom();
         StringBuilder tempPassword = new StringBuilder(baseCode());

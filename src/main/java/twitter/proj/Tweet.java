@@ -1,15 +1,13 @@
-package twitter.proj;
 
 import java.time.LocalDateTime;
-import java.io.Serializable;
 
-public class Tweet implements Serializable
+public class Tweet
 {
-    private int likes = 0;
-    private String code;
-    private String mainText;
-    private LocalDateTime time;
-    private User owner;
+    public int likes = 0;
+    public String code;
+    public String mainText;
+    public LocalDateTime time;
+    public User owner;
 
     public Tweet(User owner,String code,String mainText,LocalDateTime time)
     {
@@ -17,6 +15,10 @@ public class Tweet implements Serializable
         this.mainText = mainText;
         this.time = time;
         this.owner = owner;
+    }
+
+    public Tweet()
+    {
     }
 
     public void addLike()
