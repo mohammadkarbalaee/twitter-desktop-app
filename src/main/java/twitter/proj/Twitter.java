@@ -1,12 +1,16 @@
-package twitter.proj;
+package twitter.proj
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 public class Twitter implements Serializable
 {
+    final static Scanner jin = new Scanner(System.in);
     private ArrayList<User> signedUps = new ArrayList<>();
     private User loggedInUser;
 
@@ -301,5 +305,205 @@ public class Twitter implements Serializable
                 }
             }
         }
+    }
+
+    public void help() throws InterruptedException
+    {
+        System.out.printf
+                (
+                        "%-15s||\tto terminate the program\n" +
+                                "%-15s||\tto make a new account\n" +
+                                "%-15s||\tto register in your twitter.proj.Twitter account\n" +
+                                "%-15s||\tto unregister from your twitter.proj.Twitter account\n" +
+                                "%-15s||\tto get the data of the person who has logged in now\n" +
+                                "%-15s||\tto make a tweet\n" +
+                                "%-15s||\tto follow a user\n" +
+                                "%-15s||\tto unfollow a user\n" +
+                                "%-15s||\tto see a list of your followers\n" +
+                                "%-15s||\tto see a list of the people you follow\n" +
+                                "%-15s||\tto see a list of all tweets in details\n" +
+                                "%-15s||\tto shows ones' profile\n" +
+                                "%-15s||\tto like a tweet\n\n" +
+                                "%-15s\n\n",
+                        "Quit",
+                        "Sign up",
+                        "Login",
+                        "Logout",
+                        "My profile",
+                        "Tweet",
+                        "Follow",
+                        "Unfollow",
+                        "Followers",
+                        "Following",
+                        "Timeline",
+                        "Profile",
+                        "Like",
+                        "***These commands aren't case-sensitive\n" +
+                                "***names and emails has to be unique,otherwise, signing up will fail\t\n" +
+                                "***any command other than the ones listed above will be ignored automatically\n" +
+                                "***a valid password contains at least one digit and one special character and one uppercase letter\n" +
+                                "***before logging in only \"Quit\" and \"Sign up\" and \"Help\" are available\n" +
+                                "***while typing a tweet,pressing \"Enter\" means you're done with typing\n"
+                );
+        Thread.sleep(2000);
+    }
+
+    public void clearScreen()
+    {
+        try
+        {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        }
+        catch (IOException | InterruptedException ex){}
+    }
+
+    public void userInterface() throws InterruptedException
+    {
+        clearScreen();
+        System.out.println("\t\tCLI-based Twitter application\n");
+        String command;
+        do
+        {
+            command = jin.nextLine();
+            if ("Sign up".equalsIgnoreCase(command))
+            {
+                System.out.println("Enter your name");
+                String name = jin.nextLine();
+                System.out.println("Enter your Email");
+                String email = jin.next();
+                System.out.println("Enter your password");
+                String password = jin.next();
+                User newUser = new User(name, email, password);
+                if (signUp(newUser))
+                {
+                    System.out.println("Signed up");
+                    Thread.sleep(2000);
+                    clearScreen();
+                } else
+                {
+                    System.err.println("Failed to sign up");
+                    Thread.sleep(2000);
+                    clearScreen();
+                }
+            }
+            else if ("Login".equalsIgnoreCase(command))
+            {
+                System.out.println("Enter your Email");
+                String email = jin.next();
+                System.out.println("Enter your password");
+                String password = jin.next();
+                if (login(email, password))
+                {
+                    System.out.println("Logged in");
+                    Thread.sleep(2000);
+                    clearScreen();
+                    do
+                    {
+                        command = jin.nextLine();
+                        if ("My profile".equalsIgnoreCase(command))
+                        {
+                            myProfile();
+                        }
+                        else if ("Tweet".equalsIgnoreCase(command))
+                        {
+                            System.out.println("Type in your tweet");
+                            String mainText = jin.nextLine();
+                            tweet(mainText);
+                            System.out.println("Tweeted successfully");
+                            Thread.sleep(2000);
+                            clearScreen();
+                        }
+                        else if ("Follow".equalsIgnoreCase(command))
+                        {
+                            System.out.println("Enter the name of the person you want to follow");
+                            String name = jin.next();
+                            if (follow(name))
+                            {
+                                System.out.println("Followed successfully");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                            else
+                            {
+                                System.err.println("No such user in directory");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                        }
+                        else if ("Unfollow".equalsIgnoreCase(command))
+                        {
+                            System.out.println("Enter the name of the person you want to unfollow");
+                            String name = jin.next();
+                            if (unfollow(name))
+                            {
+                                System.out.println("Unfollowed successfully");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                            else
+                            {
+                                System.err.println("No such user in directory or in your followed users list");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                        }
+                        else if ("Followers".equalsIgnoreCase(command))
+                        {
+                            followers();
+                        }
+                        else if ("Following".equalsIgnoreCase(command))
+                        {
+                            following();
+                        }
+                        else if ("TimeLine".equalsIgnoreCase(command))
+                        {
+                            timeline();
+                        }
+                        else if ("Profile".equalsIgnoreCase(command))
+                        {
+                            System.out.println("Enter the name of the person you want to review its tweets");
+                            String name = jin.next();
+                            if (profile(name))
+                            {}
+                            else
+                            {
+                                System.err.println("No such user in directory");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                        }
+                        else if ("Like".equalsIgnoreCase(command))
+                        {
+                            System.out.println("Enter the the code of the tweet which you want to like");
+                            String code = jin.next();
+                            if (like(code))
+                            {
+                                System.out.println("Liked the tweet");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                            else
+                            {
+                                System.err.println("No tweet available with that code");
+                                Thread.sleep(2000);
+                                clearScreen();
+                            }
+                        }
+                    }
+                    while (!command.equalsIgnoreCase("Logout"));
+                }
+                else
+                {
+                    System.err.println("Failed to log in");
+                    Thread.sleep(2000);
+                    clearScreen();
+                }
+            }
+            else if ("Help".equalsIgnoreCase(command))
+            {
+                help();
+            }
+        }
+        while (!command.equalsIgnoreCase("Quit"));
     }
 }

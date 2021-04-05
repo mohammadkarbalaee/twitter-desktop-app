@@ -1,4 +1,4 @@
-package twitter.proj;
+package twitter.proj
 
 import java.util.ArrayList;
 import java.io.Serializable;
